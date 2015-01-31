@@ -1,23 +1,20 @@
 Summary:	OpenSync Python plugin
 Summary(pl.UTF-8):	Wtyczka Pythona do OpenSync
-Name:		libopensync-plugin-python
-Version:	0.36
-Release:	7
+Name:		libopensync02-plugin-python
+Version:	0.22
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
-Source0:	http://www.opensync.org/download/releases/0.36/%{name}-%{version}.tar.gz
-# Source0-md5:	b8a2d4632c88af3633453c668d2a7b11
-Patch0:		cmake.patch
-Patch1:		branch.diff
+#Source0:	http://www.opensync.org/attachment/wiki/download/libopensync-plugin-python-%{version}.tar.bz2?format=raw
+Source0:	https://pkgs.fedoraproject.org/repo/pkgs/libopensync-plugin-python/libopensync-plugin-python-%{version}.tar.bz2/ad5aba28ee66adc1c62e17cdd27c7dc7/libopensync-plugin-python-%{version}.tar.bz2
+# Source0-md5:	ad5aba28ee66adc1c62e17cdd27c7dc7
 URL:		http://www.opensync.org/
-BuildRequires:	cmake >= 2.8
 BuildRequires:	glib2-devel >= 2.0
-BuildRequires:	libopensync-devel >= 1:0.39-7
+BuildRequires:	libopensync02-devel >= 1:%{version}
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 2
-BuildRequires:	rpmbuild(macros) >= 1.577
-BuildRequires:	sed >= 4.0
-Requires:	python-opensync >= 1:0.39
+Requires:	python-opensync02 >= 1:%{version}
+Obsoletes:	libopensync-plugin-python < 0.30
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -39,31 +36,26 @@ urządzeniami, potężnego silnika synchronizacji oraz samego szkieletu.
 Ten pakiet zawiera wtyczkę Pythona dla szkieletu OpenSync.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-
-# use system version
-%{__rm} cmake/modules/FindPythonLibs.cmake
+%setup -q -n libopensync-plugin-python-%{version}
 
 %build
-install -d build
-cd build
-%cmake ..
+%configure
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__make} -C build install \
+
+%{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-%{__rm} $RPM_BUILD_ROOT%{_datadir}/libopensync1/python-plugins/sample.py
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/opensync/plugins/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/opensync/python-plugins/sample.py
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS src/sample.py
-%attr(755,root,root) %{_libdir}/libopensync1/plugins/python-module.so
-%dir %{_datadir}/libopensync1/python-plugins
+%doc AUTHORS ChangeLog NEWS README src/sample.py
+%attr(755,root,root) %{_libdir}/opensync/plugins/python_module.so
+%dir %{_libdir}/opensync/python-plugins
